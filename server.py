@@ -2,9 +2,14 @@ from urllib import response
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
+from flask_pymongo import PyMongo
 
 app = Flask(__name__)
 CORS(app)
+app.config["MONGO_URI"] = "mongodb://localhost:27017/JobApplication_db"   
+app.config['MONGO_DBNAME'] = 'JobApplication_db'
+mongo = PyMongo(app)
+mycol = "job_applications"
 
 @app.route('/')
 def hello_world():
@@ -62,7 +67,12 @@ def get_jobs_by_category():
 
     return response
 
-
+@app.route('/apply', methods=['POST'])
+def apply():
+    userInfo = request.json
+    # print(userInfo)
+    mongo.db[mycol].insert_one(userInfo)
+    return jsonify('Applied successfully')
 
 
 if __name__ == '__main__':

@@ -67,13 +67,24 @@ def get_jobs_by_category():
 
     return response
 
+@app.route('/search', methods=['GET'])
+def search():
+    searchTerm = request.args['searchTerm']
+    myUrl = 'https://remotive.com/api/remote-jobs?search='+searchTerm
+    r = requests.get(myUrl)
+    response = r.json()
+    searchTermJobCount = response['job-count']
+    if searchTermJobCount == 0:
+        return jsonify("No jobs found. Please change search term.")
+    else :
+        return response  
+
 @app.route('/apply', methods=['POST'])
 def apply():
     userInfo = request.json
     # print(userInfo)
     mongo.db[mycol].insert_one(userInfo)
     return jsonify('Applied successfully')
-
 
 if __name__ == '__main__':
 	app.run()

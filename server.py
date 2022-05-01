@@ -27,40 +27,41 @@ def get_categories():
             categories.append(job['category'])
     return jsonify(categories)
 
-@app.route('/get_jobs_by_category', methods=['GET'])
-def get_jobs_by_category():
-    categoryObj = request.args
+@app.route('/category_filter' , methods=['GET'])
+def category_filter():
+    category = request.args['filterTerm']
+    offsetValue = request.args['offsetValue']
     categorySlug = ''
-    if(categoryObj['category'] == 'Software Development'):
+    if(category == 'Software Development'):
         categorySlug = 'software-dev'
-    elif(categoryObj['category'] == 'Design') :
+    elif(category == 'Design') :
         categorySlug = 'design'
-    elif(categoryObj['category'] == 'Human Resources'):
+    elif(category == 'Human Resources'):
         categorySlug = 'hr'
-    elif(categoryObj['category'] == 'DevOps / Sysadmin'):
+    elif(category == 'DevOps / Sysadmin'):
         categorySlug = 'devops'
-    elif(categoryObj['category'] == 'Product'):
+    elif(category == 'Product'):
         categorySlug = 'product'
-    elif(categoryObj['category'] == 'Finance / Legal'):
+    elif(category == 'Finance / Legal'):
         categorySlug = 'finance-legal'
-    elif(categoryObj['category'] == 'Business'):
+    elif(category == 'Business'):
         categorySlug = 'business'
-    elif(categoryObj['category'] == 'Sales'):
+    elif(category == 'Sales'):
         categorySlug = 'sales'
-    elif(categoryObj['category'] == 'Writing'):
+    elif(category == 'Writing'):
         categorySlug = 'writing'
-    elif(categoryObj['category'] == 'Customer Service'):
+    elif(category == 'Customer Service'):
         categorySlug = 'customer_support'
-    elif(categoryObj['category'] == 'Marketing'):
+    elif(category == 'Marketing'):
         categorySlug = 'marketing'
-    elif(categoryObj['category'] == 'Data'):
+    elif(category == 'Data'):
         categorySlug = 'data'
-    elif(categoryObj['category'] == 'QA'):
+    elif(category == 'QA'):
         categorySlug = 'qa'
     else:
         categorySlug = 'all-others'
     
-    myUrl = "https://remotive.com/api/remote-jobs?category=" + categorySlug 
+    myUrl = "https://remotive.com/api/remote-jobs?category=" + categorySlug + "&limit=10&offset=" + offsetValue
 
     r=requests.get(myUrl)
     response=r.json()

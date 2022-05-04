@@ -83,9 +83,21 @@ def search():
 @app.route('/apply', methods=['POST'])
 def apply():
     userInfo = request.json
-    # print(userInfo)
     mongo.db[mycol].insert_one(userInfo)
     return jsonify('Applied successfully')
+
+@app.route('/get_applied_jobs' , methods=['GET'])
+def get_applied_jobs():
+    userUUID = request.args['userUUID']
+    jobIdArray = []
+    results = mongo.db[mycol].find({'uuid' : userUUID})
+    for r in results:
+        jobIdArray.append(r['jobId'])
+
+    return jsonify(jobIdArray)
+
+
+
 
 if __name__ == '__main__':
 	app.run()

@@ -92,11 +92,16 @@ def get_applied_jobs():
     jobIdArray = []
     results = mongo.db[mycol].find({'uuid' : userUUID})
     for r in results:
-        jobIdArray.append(r['jobId'])
+        if r['jobId'] not in jobIdArray:
+            jobIdArray.append(r['jobId'])
 
     return jsonify(jobIdArray)
 
-
+@app.route('/get_current_user_info' , methods=['GET'])
+def get_current_user_info():
+    userUUID = request.args['userUUID']
+    result = mongo.db[mycol].find_one({'uuid' : userUUID})
+    return jsonify(result['userDetails'])
 
 
 if __name__ == '__main__':

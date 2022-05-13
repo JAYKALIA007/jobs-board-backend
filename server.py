@@ -82,8 +82,19 @@ def search():
 
 @app.route('/apply', methods=['POST'])
 def apply():
-    userInfo = request.json
-    mongo.db[mycol].insert_one(userInfo)
+    arg_body = request.json
+    userInfo = request.json['userDetails']
+    userInfoBody = {}
+    userInfoBody['userInfo'] = userInfo['userInfo']
+    userInfoBody['educationInfo'] = userInfo['educationInfo']
+    userInfoBody['jobExperienceInfo'] = userInfo['jobExperienceInfo']
+    userInfoBody['uuid'] = arg_body['uuid']
+    mongo.db[mycol].insert_one(arg_body)
+    result = mongo.db["users"].find_one({"uuid": arg_body['uuid']})
+    if result : 
+        mongo.db["users"].replace_one({"uuid":arg_body['uuid']},userInfoBody)
+    else : 
+        mongo.db["users"].insert_one(userInfoBody)
     return jsonify('Applied successfully')
 
 @app.route('/get_applied_jobs' , methods=['GET'])
@@ -100,9 +111,15 @@ def get_applied_jobs():
 @app.route('/get_current_user_info' , methods=['GET'])
 def get_current_user_info():
     userUUID = request.args['userUUID']
-    result = mongo.db[mycol].find_one({'uuid' : userUUID})
-    return jsonify(result['userDetails'])
-
+    result = mongo.db["users"].find_one({'uuid' : userUUID})
+    if result : 
+        userInfoBody = {}
+        userInfoBody['userInfo'] = result['userInfo']
+        userInfoBody['educationInfo'] = result['educationInfo']
+        userInfoBody['jobExperienceInfo'] = result['jobExperienceInfo']
+    else :
+        userInfoBody = 'No user information found'
+    return jsonify(userInfoBody)
 
 if __name__ == '__main__':
 	app.run()
